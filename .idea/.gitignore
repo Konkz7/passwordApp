@@ -1,0 +1,22 @@
+# Default ignored files
+# Ignore all files in .idea by default
+.idea/*
+
+# Allow specific files that are useful to share
+!.idea/misc.xml
+!.idea/vcs.xml
+!.idea/modules.xml
+!.idea/workspace.xml
+!.idea/runConfigurations/
+!.idea/libraries/
+
+# Exclude Gradle and Android Studio-specific files
+.idea/caches/
+.idea/assetWizardSettings.xml
+.idea/gradle.xml
+.idea/encodings.xml
+.idea/codeStyles/
+.idea/dictionaries/
+.idea/tasks.xml
+.idea/usage.statistics.xml
+

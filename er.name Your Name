@@ -1,0 +1,30 @@
+[33mcommit 9759b74f626231c135b009a15347db16535f245d[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: psyao10 <psyao10@exmail.nottingham.ac.uk>
+Date:   Wed Jan 8 06:29:05 2025 +0000
+
+    Update .gitignore
+
+[33mcommit c0cb6ba0983379f3a9c5c991d49f4466db83b0ed[m
+Author: psyao10 <psyao10@exmail.nottingham.ac.uk>
+Date:   Wed Jan 8 06:23:44 2025 +0000
+
+    Resolved merge conflicts
+
+[33mcommit db2713f0d3a9f28f3dda43f22540b15cf1dfed32[m
+Merge: 0877c99 b8ed2f3
+Author: psyao10 <psyao10@exmail.nottingham.ac.uk>
+Date:   Wed Jan 8 06:23:36 2025 +0000
+
+    Merge branch 'main' of https://github.com/Konkz7/passwordApp
+
+[33mcommit 0877c993eb1ad1627af3bddaac2a3da918a53b6e[m
+Author: psyao10 <psyao10@exmail.nottingham.ac.uk>
+Date:   Wed Jan 8 06:19:57 2025 +0000
+
+    Initial commit
+
+[33mcommit b8ed2f3770f307a0cb135d1ff3b7cec03b0cee7e[m
+Author: Konkz7 <amara03@live.co.uk>
+Date:   Wed Jan 8 06:17:58 2025 +0000
+
+    Initial commit
