@@ -13,18 +13,7 @@
         android:textSize="18sp"
         android:textStyle="bold" /> <!-- Add margin -->
 
-    <TextView
-        android:id="@+id/language_label"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/language" />
-
-    <Spinner
-        android:id="@+id/language_in"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
-        android:prompt="@string/language" /> <!-- Add margin -->
+    <!-- Add margin -->
 
     <Switch
         android:id="@+id/dark_in"
@@ -55,12 +44,4 @@
         android:layout_marginBottom="12dp"
         android:gravity="center"
         android:text="@string/contact" />
-
-    <TextView
-        android:id="@+id/changeMaster_in"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
-        android:gravity="center"
-        android:text="@string/change_master" />
 </LinearLayout>

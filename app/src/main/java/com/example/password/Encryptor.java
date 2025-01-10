@@ -1,11 +1,21 @@
 package com.example.password;
 
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.security.keystore.KeyGenParameterSpec;
+import android.security.keystore.KeyProperties;
 import android.util.Base64;
 
 import java.math.BigInteger;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.KeyPairGenerator;
+import java.security.KeyStore;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.spec.KeySpec;
 
@@ -19,6 +29,75 @@ import javax.crypto.spec.SecretKeySpec;
 public class Encryptor {
 
     private static final int SALT_LENGTH = 16;
+
+    public static void generateKeyPair() throws NoSuchAlgorithmException, NoSuchProviderException, InvalidAlgorithmParameterException {
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(
+                KeyProperties.KEY_ALGORITHM_RSA, "AndroidKeyStore");
+
+        KeyGenParameterSpec keyGenParameterSpec = new KeyGenParameterSpec.Builder(
+                "KeyPairAlias",
+                KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT
+        )
+                .setDigests(KeyProperties.DIGEST_SHA256, KeyProperties.DIGEST_SHA512)
+                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_OAEP)
+                .build();
+
+        keyPairGenerator.initialize(keyGenParameterSpec);
+        keyPairGenerator.generateKeyPair();
+    }
+
+
+    public static void storeSecretKey(SecretKey secretKey,Context context) throws Exception {
+
+        // Load the Keystore
+        KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
+        keyStore.load(null);
+
+        // Get the public key from the KeyPair
+        PublicKey publicKey = keyStore.getCertificate("KeyPairAlias").getPublicKey();
+
+        // Encrypt the SecretKey
+        Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+        byte[] encryptedKey = cipher.doFinal(secretKey.getEncoded());
+
+        // Store the encrypted SecretKey (Base64 encoded) in SharedPreferences
+        String encodedKey = Base64.encodeToString(encryptedKey, Base64.DEFAULT);
+        SharedPreferences sharedPreferences = context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("encrypted_secret_key", encodedKey);
+        editor.apply();
+    }
+
+
+    public static SecretKey retrieveSecretKey(Context context) throws Exception {
+        // Load the Keystore
+        KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
+        keyStore.load(null);
+
+        // Get the private key from the KeyPair
+        PrivateKey privateKey = (PrivateKey) keyStore.getKey("KeyPairAlias", null);
+
+        // Retrieve the encrypted SecretKey from SharedPreferences
+        SharedPreferences sharedPreferences = context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
+        String encodedKey = sharedPreferences.getString("encrypted_secret_key", null);
+        if (encodedKey == null) {
+            throw new IllegalStateException("SecretKey not found in SharedPreferences");
+        }
+
+        byte[] encryptedKey = Base64.decode(encodedKey, Base64.DEFAULT);
+
+        // Decrypt the SecretKey
+        Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
+        cipher.init(Cipher.DECRYPT_MODE, privateKey);
+        byte[] decryptedKey = cipher.doFinal(encryptedKey);
+
+        // Recreate the SecretKey
+        return new SecretKeySpec(decryptedKey, "AES");
+    }
+
+
+
     public static String hashString(String input) throws NoSuchAlgorithmException {
         //MessageDigest works with MD2, MD5, SHA-1, SHA-224, SHA-256
         //SHA-384 and SHA-512
@@ -77,4 +156,5 @@ public class Encryptor {
     public static SecretKey getKeyFromBytes(byte[] keyBytes) {
         return new SecretKeySpec(keyBytes, "AES");
     }
+
 }

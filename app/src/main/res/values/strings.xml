@@ -42,6 +42,7 @@
     <string name="twofa">2FA</string>
     <string name="fingerprint">Fingerprint Log-in</string>
     <string name="language">Language:</string>
+    <string name="none">None:</string>
 
 
     <string name="forgot_prompt">Every password stored in this app is encrypted and decrypted using the master key. As a result,

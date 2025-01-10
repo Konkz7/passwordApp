@@ -1,8 +1,11 @@
 package com.example.password.Models;
 
-import static com.example.password.Models.Repo.repo;
+
+import static com.example.password.Models.ModelRepository.repo;
+
 
 import android.content.Context;
+
 import android.util.Log;
 
 import androidx.lifecycle.ViewModel;
@@ -10,6 +13,7 @@ import androidx.lifecycle.ViewModel;
 import com.example.password.Daos.SignDao;
 import com.example.password.Encryptor;
 import com.example.password.Entities.SignData;
+import com.example.password.Repositories.SignRepository;
 
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
@@ -20,17 +24,15 @@ public class LogModel extends ViewModel {
     public LogModel() {
 
     }
-
     public void initDatabase(Context context) {
         repo.setDb(MainDatabase.getDatabase(context));
-        repo.setSignDao(repo.getDb().signDao());
-        repo.setPasswordDao(repo.getDb().passwordDao());
-        repo.setFolderDao(repo.getDb().folderDao());
+        repo.setSignRepo(repo.getDb().signRepo);
+
         //repo.setRecords(repo.getPointDao().getAllDataID(false));
     }
 
-    public SignDao getSignDao(){
-        return repo.getSignDao();
+    public SignRepository getSignRepo(){
+        return repo.getSignRepo();
     }
 
 
@@ -39,12 +41,16 @@ public class LogModel extends ViewModel {
     }
 
     public void setCurrentID(SignData currentUser) {
-         repo.setCurrentUser(currentUser);
+        repo.setCurrentUser(currentUser);
+        repo.getDb().initRepo(currentUser.getId());
+        repo.setPasswordRepo(repo.getDb().passwordRepo);
+        repo.setFolderRepo(repo.getDb().folderRepo);
     }
 
     public boolean validateLogin(String email, String password) throws Exception {
 
-        SignData temp = getSignDao().getUserByEmail(email);
+
+        SignData temp = getSignRepo().get_User_By_Email(email);
 
         if (temp == null){
             return false;
@@ -64,7 +70,7 @@ public class LogModel extends ViewModel {
 
     public void addLogin(String email,String password,String phoneNumber) throws NoSuchAlgorithmException {
 
-        SignData example = getSignDao().getUserByEmail(email);
+        SignData example = getSignRepo().get_User_By_Email(email);
 
         if(example != null){
             Log.e("Error :",("An account with this email already exists"));
@@ -76,7 +82,7 @@ public class LogModel extends ViewModel {
         String finalPassword = password;
 
         MainDatabase.databaseWriteExecutor.execute(() -> {
-            getSignDao().insert(new SignData(null, email, finalPassword, salt, phoneNumber, "N/A"));
+            getSignRepo().insert_Sign(new SignData(null, email, finalPassword, salt, phoneNumber, "N/A"));
         });
 
     }

@@ -1,18 +1,26 @@
 package com.example.password.Views;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModelProvider;
 
+import com.example.password.Models.AuthModel;
 import com.example.password.R;
 
 import org.jetbrains.annotations.Nullable;
@@ -20,11 +28,13 @@ import org.jetbrains.annotations.Nullable;
 public class SettingsDialogFragment extends DialogFragment {
 
     private static final String ARG_LAYOUT_ID = "layout_id";
-    private Switch viewMode;
-    private TextView twofa;
 
     private int layout_id;
 
+    private SharedPreferences preferences;
+    private String method;
+
+    AuthModel authModel;
     // Factory method to create an instance of the fragment with a layout ID
     public static SettingsDialogFragment newInstance(int layoutId) {
         SettingsDialogFragment fragment = new SettingsDialogFragment();
@@ -41,6 +51,12 @@ public class SettingsDialogFragment extends DialogFragment {
         if (getArguments() != null) {
             layout_id = getArguments().getInt(ARG_LAYOUT_ID);
         }
+        authModel = new ViewModelProvider(requireActivity()).get(AuthModel.class);
+        authModel.setPrefID();
+        preferences = getActivity().getSharedPreferences("AppPrefs", MODE_PRIVATE);
+        method = preferences.getString(authModel.getPrefID(), "None");
+        //Log.d("AUTHC",authModel.getPrefID()+"hell0");
+
     }
 
 
@@ -48,9 +64,11 @@ public class SettingsDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(layout_id, container, false);
+
         if(layout_id == R.layout.fragment_settings_dialog) {
-            viewMode = view.findViewById(R.id.dark_in);
-            twofa = view.findViewById(R.id.twofa);
+            Switch viewMode = view.findViewById(R.id.dark_in);
+            TextView twofa = view.findViewById(R.id.twofa);
+
             if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
                 viewMode.setChecked(true); // Dark mode
             } else {
@@ -58,11 +76,15 @@ public class SettingsDialogFragment extends DialogFragment {
             }
 
             viewMode.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                SharedPreferences.Editor editor = preferences.edit();
                 if (isChecked) {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES); // Light mode
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                    editor.putBoolean("darkmode", true);
                 } else {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO); // Dark mode
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                    editor.putBoolean("darkmode", false);
                 }
+                editor.apply();
             });
             twofa.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -74,10 +96,37 @@ public class SettingsDialogFragment extends DialogFragment {
 
                 }
             });
+
         } else if (layout_id == R.layout.fragment_tfa_dialog) {
 
-        }
+            RadioGroup group = view.findViewById(R.id.auth_methods);
+            if (method.equals("None")){
+                group.check(R.id.none_in);
+            } else if (method.equals("Fingerprint Log-in")) {
+                group.check(R.id.fingerprint_in);
+            }else{
 
+            }
+            group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup group, int checkedId) {
+                    SharedPreferences.Editor editor = preferences.edit();
+
+                    RadioButton rb = view.findViewById(checkedId);
+                    //String well = rb == null ? "yes" : "no";
+                    //Log.d("help", well );
+
+
+                    if (rb != null) {
+                        editor.putString(authModel.getPrefID(), rb.getText().toString());
+                    }
+                    editor.apply();
+                    Log.d("well" , authModel.getPrefID()+"hell");
+                }
+            });
+
+        }
+        //Log.d("well" , preferences.getString("2fa","hell"));
         return view;
     }
 

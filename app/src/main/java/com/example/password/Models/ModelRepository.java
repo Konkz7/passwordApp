@@ -6,18 +6,21 @@ import com.example.password.Daos.SignDao;
 import com.example.password.Entities.FolderData;
 import com.example.password.Entities.PasswordData;
 import com.example.password.Entities.SignData;
+import com.example.password.Repositories.FolderRepository;
+import com.example.password.Repositories.PasswordRepository;
+import com.example.password.Repositories.SignRepository;
 
 import java.util.List;
 
 import javax.crypto.SecretKey;
 
-public class Repo {
+public class ModelRepository {
 
     private MainDatabase db;
-    private SignDao signDao;
+    private SignRepository signRepo;
 
-    private PasswordDao passwordDao;
-    private FolderDao folderDao;
+    private PasswordRepository passwordRepo;
+    private FolderRepository folderRepo;
 
     private List<PasswordData> filtered;
 
@@ -27,19 +30,12 @@ public class Repo {
 
     private SecretKey key;
 
-    protected static Repo repo = new Repo();
+    protected static ModelRepository repo = new ModelRepository();
 
 
-    public Repo() {
+    public ModelRepository() {
     }
 
-    public SignDao getSignDao() {
-        return signDao;
-    }
-
-    public void setSignDao(SignDao signDao) {
-        this.signDao = signDao;
-    }
 
     public MainDatabase getDb() {
         return db;
@@ -47,22 +43,6 @@ public class Repo {
 
     public void setDb(MainDatabase db) {
         this.db = db;
-    }
-
-    public PasswordDao getPasswordDao() {
-        return passwordDao;
-    }
-
-    public void setPasswordDao(PasswordDao passwordDao) {
-        this.passwordDao = passwordDao;
-    }
-
-    public FolderDao getFolderDao() {
-        return folderDao;
-    }
-
-    public void setFolderDao(FolderDao folderDao) {
-        this.folderDao = folderDao;
     }
 
     public List<FolderData> getFolders() {
@@ -96,5 +76,29 @@ public class Repo {
 
     public void setKey(SecretKey key) {
         this.key = key;
+    }
+
+    public PasswordRepository getPasswordRepo() {
+        return passwordRepo;
+    }
+
+    public void setPasswordRepo(PasswordRepository passwordRepo) {
+        this.passwordRepo = passwordRepo;
+    }
+
+    public FolderRepository getFolderRepo() {
+        return folderRepo;
+    }
+
+    public void setFolderRepo(FolderRepository folderRepo) {
+        this.folderRepo = folderRepo;
+    }
+
+    public SignRepository getSignRepo() {
+        return signRepo;
+    }
+
+    public void setSignRepo(SignRepository signRepo) {
+        this.signRepo = signRepo;
     }
 }

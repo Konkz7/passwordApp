@@ -18,15 +18,6 @@ public interface SignDao {
         @Insert(onConflict = OnConflictStrategy.IGNORE)
         void insert(SignData signData);
 
-        @Query("DELETE FROM sign_table")
-        void deleteAll();
-
-        @Query("SELECT * FROM sign_table")
-        Cursor getAllSignUpDataCursor();
-
-        @Query("SELECT * FROM sign_table")
-        LiveData<List<SignData>> getAllSignUpDataLive();
-
         @Query("SELECT * FROM sign_table")
         List<SignData> getAllSignUpData();
 

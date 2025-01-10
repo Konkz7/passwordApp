@@ -15,12 +15,17 @@ public class FolderData {
     private Long fid;
 
     @NonNull
+    @ColumnInfo(name = "User ID")
+    private Long uid;
+
+    @NonNull
     @ColumnInfo(name = "Folder Name")
     private String folderName;
 
 
-    public FolderData(@NonNull Long fid, String folderName) {
+    public FolderData(@NonNull Long fid, @NonNull Long uid, String folderName) {
         this.fid = fid;
+        this.uid = uid;
         this.folderName = folderName;
     }
 
@@ -35,4 +40,8 @@ public class FolderData {
     }
 
 
+    @NonNull
+    public Long getUid() {
+        return uid;
+    }
 }

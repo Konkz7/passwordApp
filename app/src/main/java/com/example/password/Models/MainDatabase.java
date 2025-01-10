@@ -17,18 +17,24 @@ import com.example.password.Daos.SignDao;
 import com.example.password.Entities.FolderData;
 import com.example.password.Entities.PasswordData;
 import com.example.password.Entities.SignData;
+import com.example.password.Repositories.FolderRepository;
+import com.example.password.Repositories.PasswordRepository;
+import com.example.password.Repositories.SignRepository;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-@Database(entities = {SignData.class, PasswordData.class, FolderData.class}, version = 17, exportSchema = false)
+@Database(entities = {SignData.class, PasswordData.class, FolderData.class}, version = 18, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class MainDatabase extends RoomDatabase {
 
     public abstract SignDao signDao();
-
+    public SignRepository signRepo = new SignRepository(signDao());
     public abstract PasswordDao passwordDao();
+    public PasswordRepository passwordRepo ;
 
     public abstract FolderDao folderDao();
+    public FolderRepository folderRepo ;
+
 
     private static volatile MainDatabase instance;
     private static final int threadCount = 4;
@@ -74,4 +80,9 @@ public abstract class MainDatabase extends RoomDatabase {
              */
         }
     };
+
+    public void initRepo(Long currentUID){
+        passwordRepo = new PasswordRepository(passwordDao(),currentUID);
+        folderRepo = new FolderRepository(folderDao(),currentUID);
+    }
 }

@@ -1,6 +1,12 @@
 package com.example.password.Models;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import static com.example.password.Models.ModelRepository.repo;
+
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -12,6 +18,22 @@ import androidx.lifecycle.ViewModel;
 import java.util.concurrent.Executor;
 
 public class AuthModel extends ViewModel {
+
+    private String prefID;
+
+    public String getPrefID() {
+        return this.prefID;
+    }
+
+    public void setPrefID() {
+        this.prefID = repo.getCurrentUser().getId() + "2fa";
+    }
+
+
+    @FunctionalInterface
+    public interface Callback{
+        void operation();
+    }
 
     private boolean isBiometricAvailable(Context context) {
         BiometricManager biometricManager = BiometricManager.from(context);
@@ -38,21 +60,20 @@ public class AuthModel extends ViewModel {
                 .setTitle("Fingerprint Authentication")
                 .setSubtitle("Authenticate using your fingerprint")
                 .setDescription("Place your finger on the fingerprint sensor to proceed.")
-                .setNegativeButtonText("Cancel")
+                .setAllowedAuthenticators(BiometricManager.Authenticators.DEVICE_CREDENTIAL | BiometricManager.Authenticators.BIOMETRIC_WEAK)
                 .build();
 
         // Show the dialog
         biometricPrompt.authenticate(promptInfo);
     }
-    public boolean buildFingerprint(Context context) {
-        final boolean[] granted = {false};
+    private void buildFingerprint(Context context, Callback callback) {
         if (isBiometricAvailable(context)) {
             promptFingerprint(context, new BiometricPrompt.AuthenticationCallback() {
                 @Override
                 public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
                     super.onAuthenticationSucceeded(result);
                     Toast.makeText(context, "Authentication succeeded!", Toast.LENGTH_SHORT).show();
-                    granted[0] = true;
+                    callback.operation();
                 }
 
                 @Override
@@ -70,7 +91,20 @@ public class AuthModel extends ViewModel {
         } else {
             Toast.makeText(context, "Biometric authentication not available", Toast.LENGTH_SHORT).show();
         }
-        return granted[0];
+    }
+
+    public void authenticate(Context context,Callback callback){
+
+        SharedPreferences preferences = context.getSharedPreferences("AppPrefs", MODE_PRIVATE);
+        String method = preferences.getString( getPrefID(),"None");
+
+        Log.d("AUTH" , getPrefID());
+        if(method.equals("None")){
+            callback.operation();
+        } else if (method.equals("Fingerprint Log-in")) {
+            buildFingerprint(context,callback);
+        }
+
     }
 
 

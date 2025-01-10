@@ -1,6 +1,6 @@
 package com.example.password.Models;
 
-import static com.example.password.Models.Repo.repo;
+import static com.example.password.Models.ModelRepository.repo;
 
 import android.app.AlertDialog;
 import android.content.ClipData;
@@ -29,6 +29,8 @@ import com.example.password.Encryptor;
 import com.example.password.Entities.FolderData;
 import com.example.password.Entities.PasswordData;
 import com.example.password.R;
+import com.example.password.Repositories.FolderRepository;
+import com.example.password.Repositories.PasswordRepository;
 import com.example.password.Views.MainFragment;
 import com.example.password.Views.PasswordRecyclerAdapter;
 
@@ -86,12 +88,12 @@ public class PassModel extends ViewModel {
         repo.setFolders(folders);
     }
 
-    public PasswordDao getPasswordDao(){
-        return repo.getPasswordDao();
+    public PasswordRepository getPasswordRepo(){
+        return repo.getPasswordRepo();
     }
 
-    public FolderDao getFolderDao(){
-        return repo.getFolderDao();
+    public FolderRepository getFolderRepo(){
+        return repo.getFolderRepo();
     }
     public void setHolder(PasswordRecyclerAdapter.ViewHolder holder) {
         this.holder = holder;
@@ -100,18 +102,20 @@ public class PassModel extends ViewModel {
 
     public void initRview(RecyclerView r){
         pList = r;
-        setFiltered(getPasswordDao().getFilteredPasswordData(pickedFolder,false));
+        setFiltered(getPasswordRepo().get_Filtered_Password_Data(pickedFolder,false));
     }
 
     public void initLayout(LinearLayout l,MainFragment m){
         layout = l;
         mainInstance = m;
 
-        setFolders(getFolderDao().getAllFolders());
+        setFolders(getFolderRepo().get_All_Folders());
         if(getFolders().isEmpty()){
             MainDatabase.databaseWriteExecutor.execute(() -> {
-                getFolderDao().insert(new FolderData(0L,"Unspecified"));
+                getFolderRepo().insert_Folder(new FolderData(0L,repo.getCurrentUser().getId(),"Unspecified"));
             });
+
+            Log.d("Folder","Empty ahh nig"+getFolderRepo().get_All_Folders().size());
         }
 
     }
@@ -121,16 +125,16 @@ public class PassModel extends ViewModel {
         String pw = Encryptor.encrypt(password,repo.getKey());
 
         MainDatabase.databaseWriteExecutor.execute(() -> {
-            getPasswordDao().insert(new PasswordData(null, pw, appname , username, new Date(), fid, repo.getCurrentUser().getId(), false, renewal));
+            getPasswordRepo().insert_Password(new PasswordData(null, pw, appname , username, new Date(), fid, repo.getCurrentUser().getId(), false, renewal));
         });
 
-        Log.d("debug pass", pw + "??" + appname + "??" + username + "??" + fid + "??" + repo.getCurrentUser().getId() +"??" + getPasswordDao().getAllPasswordData().size());
+
 
     }
 
     public void changePasswordValidity(Long pid,boolean redacted){
         MainDatabase.databaseWriteExecutor.execute(() -> {
-            getPasswordDao().changePasswordValidity(pid, redacted);
+            getPasswordRepo().change_Password_Validity(pid, redacted);
         });
     }
 
@@ -139,7 +143,7 @@ public class PassModel extends ViewModel {
         for (PasswordData i: pickedPasswords
              ) {
             MainDatabase.databaseWriteExecutor.execute(() -> {
-                getPasswordDao().deletePassword(i.getPid());
+                getPasswordRepo().delete_Password(i.getPid());
             });
         }
         enableDMButtons(false);
@@ -162,7 +166,7 @@ public class PassModel extends ViewModel {
         button.setOnClickListener(view -> {
             pickedFolder = fid;
             removeAllPickedPasswords();
-            setFiltered(getPasswordDao().getFilteredPasswordData(fid,false));
+            setFiltered(getPasswordRepo().get_Filtered_Password_Data(fid,false));
             Log.d("Folder",  "size =" + getFiltered().size());
             maintainPasswords(false);
         });
@@ -196,7 +200,7 @@ public class PassModel extends ViewModel {
                                         String userInput = inputField.getText().toString();
                                         // Handle the user input (e.g., store it or display it)
                                         MainDatabase.databaseWriteExecutor.execute(() -> {
-                                            getFolderDao().renameFolder(fid,userInput);
+                                            getFolderRepo().rename_Folder(fid,userInput);
                                         });
                                     }
                                 });
@@ -216,10 +220,10 @@ public class PassModel extends ViewModel {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 // Handle Option 2 selection
-                                for (PasswordData x:getPasswordDao().getFilteredPasswordData(fid,false)
+                                for (PasswordData x:getPasswordRepo().get_Filtered_Password_Data(fid,false)
                                      ) {
                                     MainDatabase.databaseWriteExecutor.execute(() -> {
-                                        getPasswordDao().deletePassword(x.getPid());
+                                        getPasswordRepo().delete_Password(x.getPid());
                                     });
                                 }
 
@@ -228,7 +232,7 @@ public class PassModel extends ViewModel {
                                 }
 
                                 MainDatabase.databaseWriteExecutor.execute(() -> {
-                                    getFolderDao().deleteFolder(fid);
+                                    getFolderRepo().delete_Folder(fid);
                                 });
 
                                 removeAllPickedPasswords();
@@ -272,7 +276,7 @@ public class PassModel extends ViewModel {
                     for (PasswordData x: pickedPasswords
                          ) {
                         MainDatabase.databaseWriteExecutor.execute(() -> {
-                           getPasswordDao().reFolderPassword(x.getPid(),getFolders().get(selectedFolder).getFid());
+                            getPasswordRepo().re_Folder_Password(x.getPid(),getFolders().get(selectedFolder).getFid());
                         });
                         enableDMButtons(false);
                     }
@@ -301,17 +305,17 @@ public class PassModel extends ViewModel {
     }
 
     public void addFolder(String name){
-        FolderData temp = new FolderData(null,name);
+        FolderData temp = new FolderData(null,repo.getCurrentUser().getId(),name);
 
         MainDatabase.databaseWriteExecutor.execute(() -> {
-            getFolderDao().insert(temp);
+            getFolderRepo().insert_Folder(temp);
         });
     }
 
     public void maintainFolders(){
         layout.removeAllViews();
 
-        setFolders(getFolderDao().getAllFolders());
+        setFolders(getFolderRepo().get_All_Folders());
 
         List<FolderData> folders = getFolders();
 
@@ -331,9 +335,9 @@ public class PassModel extends ViewModel {
     public void maintainPasswords(boolean value){
         // Find the RecyclerView
         if(!value) {
-            setFiltered(getPasswordDao().getFilteredPasswordData(pickedFolder, false));
+            setFiltered(getPasswordRepo().get_Filtered_Password_Data(pickedFolder, false));
         }else{
-            setFiltered(getPasswordDao().getAllPasswordData( true));
+            setFiltered(getPasswordRepo().get_All_Password_Data( true));
         }
         if (pList != null) {
             Context context = pList.getContext();
@@ -353,7 +357,7 @@ public class PassModel extends ViewModel {
     public void deleteFolders(){
 
         MainDatabase.databaseWriteExecutor.execute(() -> {
-            getFolderDao().deleteAll();
+            getFolderRepo().delete_All();
 
         });
 
@@ -488,7 +492,7 @@ public class PassModel extends ViewModel {
         String finalPassword = Encryptor.encrypt(password,repo.getKey());
         String finalAppName = appName;
         MainDatabase.databaseWriteExecutor.execute(() -> {
-            getPasswordDao().changePassword(pid, finalAppName,userName, finalPassword,renewal,new Date());
+            getPasswordRepo().change_Password(pid, finalAppName,userName, finalPassword,renewal,new Date());
         });
     }
 

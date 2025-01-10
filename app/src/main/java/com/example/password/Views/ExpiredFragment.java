@@ -52,7 +52,7 @@ public class ExpiredFragment extends Fragment {
 
         passModel.maintainPasswords(true);
 
-        passModel.getPasswordDao().getAllPasswordDataLive(false).observe(getViewLifecycleOwner(), passwordData -> {
+        passModel.getPasswordRepo().get_All_Password_Data_Live(false).observe(getViewLifecycleOwner(), passwordData -> {
             // Automatically updates when a folder is added
             passModel.maintainPasswords(true);
         });

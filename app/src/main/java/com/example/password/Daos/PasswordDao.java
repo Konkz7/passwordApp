@@ -16,39 +16,43 @@ import java.util.List;
 @Dao
 public interface PasswordDao {
 
+        // Insert a password (no user-specific constraint here)
         @Insert(onConflict = OnConflictStrategy.IGNORE)
         void insert(PasswordData passwordData);
 
-        @Query("DELETE FROM password_table")
-        void deleteAll();
+        // Delete all passwords for a specific user
+        @Query("DELETE FROM password_table WHERE `User ID` = :uid")
+        void deleteAll(Long uid);
 
-        @Query("DELETE FROM password_table WHERE `Password ID` = :pid")
-        void deletePassword(Long pid);
+        // Delete a specific password by ID for a specific user
+        @Query("DELETE FROM password_table WHERE `Password ID` = :pid AND `User ID` = :uid")
+        void deletePassword(Long pid, Long uid);
 
-        @Query("SELECT * FROM password_table")
-        List<PasswordData> getAllPasswordData();
+        // Get all password data for a specific user
+        @Query("SELECT * FROM password_table WHERE `User ID` = :uid")
+        List<PasswordData> getAllPasswordData(Long uid);
 
-        @Query("SELECT * FROM password_table WHERE Redacted = :redacted")
-        List<PasswordData> getAllPasswordData(boolean redacted);
+        // Get all password data for a specific user and redaction status
+        @Query("SELECT * FROM password_table WHERE `User ID` = :uid AND Redacted = :redacted")
+        List<PasswordData> getAllPasswordData(Long uid, boolean redacted);
 
-        @Query("SELECT * FROM password_table WHERE Redacted = :redacted AND `Folder ID` = :fid")
-        List<PasswordData> getFilteredPasswordData(Long fid,boolean redacted);
+        // Get filtered password data for a specific user, folder, and redaction status
+        @Query("SELECT * FROM password_table WHERE `User ID` = :uid AND `Folder ID` = :fid AND Redacted = :redacted")
+        List<PasswordData> getFilteredPasswordData(Long uid, Long fid, boolean redacted);
 
-        @Query("SELECT * FROM password_table WHERE Redacted = :redacted")
-        LiveData<List<PasswordData>> getAllPasswordDataLive(boolean redacted);
+        // Get all password data as LiveData for a specific user and redaction status
+        @Query("SELECT * FROM password_table WHERE `User ID` = :uid AND Redacted = :redacted")
+        LiveData<List<PasswordData>> getAllPasswordDataLive(Long uid, boolean redacted);
 
-        @Query("SELECT * FROM password_table WHERE Redacted = :redacted ")
-        Cursor getAllPasswordDataCursor(boolean redacted);
+        // Refolder a password for a specific user
+        @Query("UPDATE password_table SET `Folder ID` = :fid WHERE `Password ID` = :pid AND `User ID` = :uid")
+        void reFolderPassword(Long pid, Long fid, Long uid);
 
-        @Query("UPDATE password_table SET `Folder ID` = :fid WHERE `Password ID` = :pid")
-        void reFolderPassword(Long pid, Long fid);
+        // Change password details for a specific user
+        @Query("UPDATE password_table SET `App Name` = :appname, Username = :username, Password = :password, `Valid Period` = :renewal, `Last Changed` = :lastChanged WHERE `Password ID` = :pid AND `User ID` = :uid")
+        void changePassword(Long pid, String appname, String username, String password, int renewal, Date lastChanged, Long uid);
 
-        @Query("UPDATE password_table SET `App Name` = :appname, Username = :username , Password = :password , `Valid Period` = :renewal , `Last Changed` = :lastChanged WHERE `Password ID` = :pid")
-        void changePassword(Long pid, String appname, String username, String password, int renewal, Date lastChanged);
-
-        @Query("UPDATE password_table SET Redacted = :redacted  WHERE `Password ID` = :pid")
-        void changePasswordValidity(Long pid, boolean redacted);
-
-
-
+        // Change password validity for a specific user
+        @Query("UPDATE password_table SET Redacted = :redacted WHERE `Password ID` = :pid AND `User ID` = :uid")
+        void changePasswordValidity(Long pid, boolean redacted, Long uid);
 }

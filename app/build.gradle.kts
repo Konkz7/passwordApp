@@ -42,6 +42,7 @@ dependencies {
     implementation("androidx.biometric:biometric:1.1.0")
 
 
+
     // Navigation Component
     implementation("androidx.navigation:navigation-fragment-ktx:2.8.4")
     implementation("androidx.navigation:navigation-ui-ktx:2.8.4")
@@ -50,6 +51,7 @@ dependencies {
     implementation("androidx.room:room-common:2.6.1")
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.preference:preference:1.2.0")
+    implementation("androidx.security:security-crypto:1.0.0")
     annotationProcessor("androidx.room:room-compiler:2.6.1")
 
     // Lifecycle libraries

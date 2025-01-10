@@ -47,6 +47,7 @@ public class FirstFragment extends Fragment {
         authModel = new ViewModelProvider(requireActivity()).get(AuthModel.class);
 
 
+
         binding.buttonForgot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -60,8 +61,7 @@ public class FirstFragment extends Fragment {
         binding.buttonRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                NavHostFragment.findNavController(FirstFragment.this)
-+                        .navigate(R.id.action_FirstFragment_to_ThirdFragment);
+                NavHostFragment.findNavController(FirstFragment.this).navigate(R.id.action_FirstFragment_to_ThirdFragment);
             }
         });
 
@@ -70,19 +70,28 @@ public class FirstFragment extends Fragment {
             public void onClick(View view) {
 
                 try {
+
                     if(logModel.validateLogin(binding.inputEmail.getText().toString(),binding.inputPw.getText().toString())){
                         /*
                         Intent intent1 = new Intent(getActivity(), AppActivity.class);
                         startActivity(intent1);
 
                          */
-                        if(authModel.buildFingerprint(getContext())) {
-                            SignData user = logModel.getSignDao().getUserByEmail(binding.inputEmail.getText().toString());
-                            logModel.setCurrentID(user);
+                        SignData user = logModel.getSignRepo().get_User_By_Email(binding.inputEmail.getText().toString());
+                        logModel.setCurrentID(user);
+                        Log.d("AUTH", "hi"+ user.getId());
+                        authModel.setPrefID();
+
+                        AuthModel.Callback callback =() ->{
 
                             Intent intent = new Intent(getActivity(), MainActivity2.class);
                             startActivity(intent);
-                        }
+                        };
+
+
+                        authModel.authenticate(getContext(),callback);
+
+
 
                         //NavHostFragment.findNavController(FirstFragment.this)
                          //       .navigate(R.id.action_FirstFragment_to_MainFragment);
@@ -124,4 +133,11 @@ public class FirstFragment extends Fragment {
         binding = null;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        binding.inputEmail.getText().clear();
+        binding.inputPw.getText().clear();
+
+    }
 }

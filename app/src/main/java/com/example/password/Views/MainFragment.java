@@ -69,12 +69,12 @@ public class MainFragment extends Fragment {
         passModel.maintainPasswords(false);
 
 
-        passModel.getFolderDao().getAllFoldersLive().observe(getViewLifecycleOwner(), folderData -> {
+        passModel.getFolderRepo().get_All_Folders_Live().observe(getViewLifecycleOwner(), folderData -> {
             // Automatically updates when a folder is added
             passModel.maintainFolders();
         });
 
-        passModel.getPasswordDao().getAllPasswordDataLive(false).observe(getViewLifecycleOwner(), passwordData -> {
+        passModel.getPasswordRepo().get_All_Password_Data_Live(false).observe(getViewLifecycleOwner(), passwordData -> {
             // Automatically updates when a folder is added
             passModel.maintainPasswords(false);
         });
