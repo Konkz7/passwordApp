@@ -14,12 +14,13 @@ import org.passay.Rule;
 import org.passay.RuleResult;
 import org.passay.WhitespaceRule;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 
 public class GenModel extends ViewModel {
-    private static final int MAX_PASSWORD_LENGTH = 15;
+    private static final int MAX_PASSWORD_LENGTH = 16;
 
     private String generated;
 
@@ -34,41 +35,56 @@ public class GenModel extends ViewModel {
     public  String generatePassword(Integer length, Integer numUppercase, Integer numDigits, Integer numSpecial) {
 
         if (length < numUppercase + numDigits + numSpecial) {
-            length = numDigits + numSpecial + numUppercase + 1;
+            length = numDigits + numSpecial + numUppercase;
         } else if (length > MAX_PASSWORD_LENGTH) {
             length = MAX_PASSWORD_LENGTH;
+        }else if(length <= 0){
+            return null;
         }
 
+        List<CharacterRule> rules = new ArrayList<>();
+
+
         PasswordGenerator generator = new PasswordGenerator();
-        CharacterRule upperCaseRule = new CharacterRule(EnglishCharacterData.UpperCase);
-        upperCaseRule.setNumberOfCharacters(numUppercase);
 
-        CharacterRule digitRule = new CharacterRule(EnglishCharacterData.Digit);
-        digitRule.setNumberOfCharacters(numDigits);
+        if(numUppercase > 0) {
+            CharacterRule upperCaseRule = new CharacterRule(EnglishCharacterData.UpperCase);
+            upperCaseRule.setNumberOfCharacters(numUppercase);
+            rules.add(upperCaseRule);
+        }
 
-        CharacterRule specialCharRule = new CharacterRule(new CharacterData() {
-            public String getErrorCode() {
-                return "INSUFFICIENT_SPECIAL";
-            }
+        if(numDigits > 0) {
+            CharacterRule digitRule = new CharacterRule(EnglishCharacterData.Digit);
+            digitRule.setNumberOfCharacters(numDigits);
+            rules.add(digitRule);
+        }
 
-            public String getCharacters() {
-                return "!@#$%^&*()_+";
-            }
-        });
-        specialCharRule.setNumberOfCharacters(numSpecial);
+        if(numSpecial > 0) {
+            CharacterRule specialCharRule = new CharacterRule(new CharacterData() {
+                public String getErrorCode() {
+                    return "INSUFFICIENT_SPECIAL";
+                }
+
+                public String getCharacters() {
+                    return "!@#$%^&*()_+";
+                }
+            });
+            specialCharRule.setNumberOfCharacters(numSpecial);
+            rules.add(specialCharRule);
+        }
 
         CharacterRule lowerCaseRule = new CharacterRule(EnglishCharacterData.LowerCase);
+
 
         // Remaining characters will be lowercase to fill up the required length
         int numLowercase = length - (numUppercase + numDigits + numSpecial);
 
         if (numLowercase > 0) {
             lowerCaseRule.setNumberOfCharacters(numLowercase);
-        } else {
-            lowerCaseRule.setNumberOfCharacters(0);
+            rules.add(lowerCaseRule);
         }
 
-        List<CharacterRule> rules = Arrays.asList(upperCaseRule, digitRule, specialCharRule, lowerCaseRule);
+
         generated = generator.generatePassword(length, rules);
         return generated;
     }

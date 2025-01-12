@@ -49,40 +49,20 @@ public class GenerateFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        EditText lengthIn = binding.lengthIn;
-        EditText capitalIn = binding.capitalIn;
-        EditText digitsIn = binding.digitsIn;
-        EditText specialsIn = binding.specialsIn;
+
 
 
         binding.generate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Integer length;
-                Integer digits;
-                Integer capitals;
-                Integer specials;
-                try {
-                    length = Integer.parseInt(lengthIn.getText().toString());
-                }catch (NumberFormatException e){
-                    length = 1;
+                Integer[] inputs = getValues();
+
+                Integer sum =  inputs[1] + inputs[2] + inputs[3];
+                if(inputs[0] < sum){
+                    inputs[0] = sum;
+                    binding.lengthIn.setText(sum.toString());
                 }
-                try {
-                    digits = Integer.parseInt(digitsIn.getText().toString());
-                }catch (NumberFormatException e){
-                    digits = 1;
-                }
-                try {
-                    capitals = Integer.parseInt(capitalIn.getText().toString());
-                }catch (NumberFormatException e){
-                    capitals = 1;
-                }
-                try {
-                    specials = Integer.parseInt(specialsIn.getText().toString());
-                }catch (NumberFormatException e){
-                    specials = 1;
-                }
-                binding.generatedPW.setText(genModel.generatePassword(length,capitals,digits,specials));
+                binding.generatedPW.setText(genModel.generatePassword(inputs[0],inputs[1],inputs[2],inputs[3]));
             }
         });
 
@@ -94,6 +74,40 @@ public class GenerateFragment extends Fragment {
 
             }
         });
+
+    }
+
+    private Integer[] getValues(){
+        EditText lengthIn = binding.lengthIn;
+        EditText capitalIn = binding.capitalIn;
+        EditText digitsIn = binding.digitsIn;
+        EditText specialsIn = binding.specialsIn;
+        Integer length;
+        Integer digits;
+        Integer capitals;
+        Integer specials;
+
+        try {
+            length = Integer.parseInt(lengthIn.getText().toString());
+        }catch (NumberFormatException e){
+            length = 0;
+        }
+        try {
+            digits = Integer.parseInt(digitsIn.getText().toString());
+        }catch (NumberFormatException e){
+            digits = 0;
+        }
+        try {
+            capitals = Integer.parseInt(capitalIn.getText().toString());
+        }catch (NumberFormatException e){
+            capitals = 0;
+        }
+        try {
+            specials = Integer.parseInt(specialsIn.getText().toString());
+        }catch (NumberFormatException e){
+            specials = 0;
+        }
+        return new Integer[]{length,capitals,digits,specials};
     }
 
 }
