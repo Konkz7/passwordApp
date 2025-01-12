@@ -20,6 +20,10 @@ public class SignRepository {
         signDao.insert(signData);
     }
 
+    public void delete_Sign(Long uid){
+        signDao.delete(uid);
+    }
+
     // Retrieve all signup data
     public List<SignData> get_All_Sign_Up_Data() {
         return signDao.getAllSignUpData();

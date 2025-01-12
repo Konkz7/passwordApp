@@ -25,6 +25,28 @@
         tools:context=".Views.MainFragment"
         tools:listitem="@layout/fragment_item" />
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/empty_view2"
+        android:layout_width="392dp"
+        android:layout_height="518dp"
+        android:layout_marginTop="104dp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.473"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="So much empty..."
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <CheckBox
         android:id="@+id/selectAll_button2"
         android:layout_width="179dp"

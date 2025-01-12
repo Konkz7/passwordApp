@@ -152,9 +152,6 @@ public class Encryptor {
         return new String(decryptedBytes);
     }
 
-    // Convert a byte array to a SecretKey
-    public static SecretKey getKeyFromBytes(byte[] keyBytes) {
-        return new SecretKeySpec(keyBytes, "AES");
-    }
+    
 
 }

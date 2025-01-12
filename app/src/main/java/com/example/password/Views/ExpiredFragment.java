@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,7 +23,6 @@ public class ExpiredFragment extends Fragment {
 
     private PassModel passModel;
 
-    private RecyclerView recyclerView;
     private CheckBox select;
     private Button delete;
     public ExpiredFragment() {
@@ -43,11 +43,13 @@ public class ExpiredFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_expired_list, container, false);
 
-        recyclerView = view.findViewById(R.id.list2);
+        RecyclerView recyclerView = view.findViewById(R.id.list2);
+        ConstraintLayout empty_screen = view.findViewById(R.id.empty_view2);
+
         delete = view.findViewById(R.id.delete_button2);
         select = view.findViewById(R.id.selectAll_button2);
 
-        passModel.initRview(recyclerView);
+        passModel.initRview(recyclerView,empty_screen);
         passModel.initButtons(null,delete);
 
         passModel.maintainPasswords(true);

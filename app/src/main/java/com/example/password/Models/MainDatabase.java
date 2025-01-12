@@ -23,7 +23,7 @@ import com.example.password.Repositories.SignRepository;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-@Database(entities = {SignData.class, PasswordData.class, FolderData.class}, version = 18, exportSchema = false)
+@Database(entities = {SignData.class, PasswordData.class, FolderData.class}, version = 19, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class MainDatabase extends RoomDatabase {
 
@@ -85,4 +85,6 @@ public abstract class MainDatabase extends RoomDatabase {
         passwordRepo = new PasswordRepository(passwordDao(),currentUID);
         folderRepo = new FolderRepository(folderDao(),currentUID);
     }
+
+
 }

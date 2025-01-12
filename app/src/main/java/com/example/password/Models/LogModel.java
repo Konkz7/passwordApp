@@ -4,6 +4,7 @@ package com.example.password.Models;
 import static com.example.password.Models.ModelRepository.repo;
 
 
+import android.app.Activity;
 import android.content.Context;
 
 import android.util.Log;
@@ -13,6 +14,8 @@ import androidx.lifecycle.ViewModel;
 import com.example.password.Daos.SignDao;
 import com.example.password.Encryptor;
 import com.example.password.Entities.SignData;
+import com.example.password.Repositories.FolderRepository;
+import com.example.password.Repositories.PasswordRepository;
 import com.example.password.Repositories.SignRepository;
 
 import java.nio.charset.StandardCharsets;
@@ -34,6 +37,13 @@ public class LogModel extends ViewModel {
     public SignRepository getSignRepo(){
         return repo.getSignRepo();
     }
+    public PasswordRepository getPasswordRepo(){
+        return repo.getPasswordRepo();
+    }
+    public FolderRepository getFolderRepo(){
+        return repo.getFolderRepo();
+    }
+
 
 
     public SignData getCurrentUser(){
@@ -85,6 +95,12 @@ public class LogModel extends ViewModel {
             getSignRepo().insert_Sign(new SignData(null, email, finalPassword, salt, phoneNumber, "N/A"));
         });
 
+    }
+    public void deleteAccount(Activity activity){
+        activity.deleteSharedPreferences(getCurrentUser().getId()+ "2fa");
+        getPasswordRepo().delete_All();
+        getFolderRepo().delete_All();
+        getSignRepo().delete_Sign(getCurrentUser().getId());
     }
 
 }

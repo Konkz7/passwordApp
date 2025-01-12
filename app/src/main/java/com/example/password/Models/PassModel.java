@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.ViewModel;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -47,7 +48,7 @@ public class PassModel extends ViewModel {
     private MainFragment mainInstance;
 
     private RecyclerView pList = null;
-
+    private ConstraintLayout empty_screen;
     private List<String> categories  = new ArrayList<>();
 
     private int selectedFolder = 0;
@@ -100,8 +101,9 @@ public class PassModel extends ViewModel {
     }
 
 
-    public void initRview(RecyclerView r){
+    public void initRview(RecyclerView r,ConstraintLayout layout){
         pList = r;
+        empty_screen = layout;
         setFiltered(getPasswordRepo().get_Filtered_Password_Data(pickedFolder,false));
     }
 
@@ -338,6 +340,12 @@ public class PassModel extends ViewModel {
             setFiltered(getPasswordRepo().get_Filtered_Password_Data(pickedFolder, false));
         }else{
             setFiltered(getPasswordRepo().get_All_Password_Data( true));
+        }
+        if(getFiltered().isEmpty()){
+            Log.d("Rview", "Empty ahh");
+            empty_screen.setVisibility(View.VISIBLE);
+        }else{
+            empty_screen.setVisibility(View.INVISIBLE);
         }
         if (pList != null) {
             Context context = pList.getContext();

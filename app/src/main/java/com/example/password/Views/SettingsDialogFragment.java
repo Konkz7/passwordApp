@@ -2,6 +2,8 @@ package com.example.password.Views;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import android.app.AlertDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,6 +23,8 @@ import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.password.Models.AuthModel;
+import com.example.password.Models.LogModel;
+import com.example.password.Models.MainDatabase;
 import com.example.password.R;
 
 import org.jetbrains.annotations.Nullable;
@@ -34,7 +38,8 @@ public class SettingsDialogFragment extends DialogFragment {
     private SharedPreferences preferences;
     private String method;
 
-    AuthModel authModel;
+    private AuthModel authModel;
+    private LogModel logModel;
     // Factory method to create an instance of the fragment with a layout ID
     public static SettingsDialogFragment newInstance(int layoutId) {
         SettingsDialogFragment fragment = new SettingsDialogFragment();
@@ -52,6 +57,8 @@ public class SettingsDialogFragment extends DialogFragment {
             layout_id = getArguments().getInt(ARG_LAYOUT_ID);
         }
         authModel = new ViewModelProvider(requireActivity()).get(AuthModel.class);
+        logModel = new ViewModelProvider(requireActivity()).get(LogModel.class);
+
         authModel.setPrefID();
         preferences = getActivity().getSharedPreferences("AppPrefs", MODE_PRIVATE);
         method = preferences.getString(authModel.getPrefID(), "None");
@@ -68,6 +75,7 @@ public class SettingsDialogFragment extends DialogFragment {
         if(layout_id == R.layout.fragment_settings_dialog) {
             Switch viewMode = view.findViewById(R.id.dark_in);
             TextView twofa = view.findViewById(R.id.twofa);
+            TextView wipe = view.findViewById(R.id.wipe);
 
             if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
                 viewMode.setChecked(true); // Dark mode
@@ -94,6 +102,17 @@ public class SettingsDialogFragment extends DialogFragment {
                     settingsDialogFragment.show(getParentFragmentManager(), "SettingsDialog");
 
 
+                }
+            });
+
+            wipe.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    handleWipe(() -> {
+                        // If user confirms, navigate back
+                        logModel.deleteAccount(requireActivity());
+                        requireActivity().finish();
+                    });
                 }
             });
 
@@ -143,6 +162,28 @@ public class SettingsDialogFragment extends DialogFragment {
 
         }
 
+    }
+
+    public boolean handleWipe( Runnable onConfirmLeave) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Confirm Restore")
+                .setMessage("Are you sure you want to completely wipe your database?")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    // Execute the action to leave the fragment
+                    if (onConfirmLeave != null) {
+                        onConfirmLeave.run();
+                    }
+                })
+                .setNegativeButton("No", (dialog, which) -> {
+                    // Do nothing and close the dialog
+                    dialog.dismiss();
+                })
+                .setCancelable(true); // Allow dialog dismissal when tapping outside
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        return false; // Return false to indicate navigation is handled
     }
 
 
