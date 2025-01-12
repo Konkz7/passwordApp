@@ -97,7 +97,7 @@ public class LogModel extends ViewModel {
 
     }
     public void deleteAccount(Activity activity){
-        activity.deleteSharedPreferences(getCurrentUser().getId()+ "2fa");
+        activity.deleteSharedPreferences(getCurrentUser().getId()+ "AppPrefs");
         getPasswordRepo().delete_All();
         getFolderRepo().delete_All();
         getSignRepo().delete_Sign(getCurrentUser().getId());

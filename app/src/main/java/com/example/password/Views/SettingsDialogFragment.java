@@ -60,8 +60,8 @@ public class SettingsDialogFragment extends DialogFragment {
         logModel = new ViewModelProvider(requireActivity()).get(LogModel.class);
 
         authModel.setPrefID();
-        preferences = getActivity().getSharedPreferences("AppPrefs", MODE_PRIVATE);
-        method = preferences.getString(authModel.getPrefID(), "None");
+        preferences = getActivity().getSharedPreferences(authModel.getPrefID(), MODE_PRIVATE);
+        method = preferences.getString("2fa", "None");
         //Log.d("AUTHC",authModel.getPrefID()+"hell0");
 
     }
@@ -137,10 +137,10 @@ public class SettingsDialogFragment extends DialogFragment {
 
 
                     if (rb != null) {
-                        editor.putString(authModel.getPrefID(), rb.getText().toString());
+                        editor.putString("2fa", rb.getText().toString());
                     }
                     editor.apply();
-                    Log.d("well" , authModel.getPrefID()+"hell");
+                    Log.d("well" , "2fahell");
                 }
             });
 

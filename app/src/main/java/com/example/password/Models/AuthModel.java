@@ -26,7 +26,7 @@ public class AuthModel extends ViewModel {
     }
 
     public void setPrefID() {
-        this.prefID = repo.getCurrentUser().getId() + "2fa";
+        this.prefID = repo.getCurrentUser().getId() + "AppPrefs";
     }
 
 
@@ -95,8 +95,8 @@ public class AuthModel extends ViewModel {
 
     public void authenticate(Context context,Callback callback){
 
-        SharedPreferences preferences = context.getSharedPreferences("AppPrefs", MODE_PRIVATE);
-        String method = preferences.getString( getPrefID(),"None");
+        SharedPreferences preferences = context.getSharedPreferences(getPrefID(), MODE_PRIVATE);
+        String method = preferences.getString( "2fa","None");
 
         Log.d("AUTH" , getPrefID());
         if(method.equals("None")){
