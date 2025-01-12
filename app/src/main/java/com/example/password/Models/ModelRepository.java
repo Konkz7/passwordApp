@@ -28,7 +28,6 @@ public class ModelRepository {
 
     private SignData currentUser;
 
-    private SecretKey key;
 
     protected static ModelRepository repo = new ModelRepository();
 
@@ -70,13 +69,7 @@ public class ModelRepository {
         this.currentUser = currentUser;
     }
 
-    public SecretKey getKey() {
-        return key;
-    }
 
-    public void setKey(SecretKey key) {
-        this.key = key;
-    }
 
     public PasswordRepository getPasswordRepo() {
         return passwordRepo;

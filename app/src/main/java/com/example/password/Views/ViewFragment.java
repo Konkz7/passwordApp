@@ -149,7 +149,7 @@ public class ViewFragment extends Fragment {
         int renewal = Integer.parseInt(vv.getText().toString());
 
         try {
-            passModel.changePassword(pid,appName,userName,password,renewal,def);
+            passModel.changePassword(pid,appName,userName,password,renewal,def,getContext());
             passModel.changePasswordValidity(pid,false);
         } catch (Exception e) {
             throw new RuntimeException(e);

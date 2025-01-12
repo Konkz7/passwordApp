@@ -71,7 +71,7 @@ public class FirstFragment extends Fragment {
 
                 try {
 
-                    if(logModel.validateLogin(binding.inputEmail.getText().toString(),binding.inputPw.getText().toString())){
+                    if(logModel.validateLogin(binding.inputEmail.getText().toString(),binding.inputPw.getText().toString(),getContext())){
                         /*
                         Intent intent1 = new Intent(getActivity(), AppActivity.class);
                         startActivity(intent1);

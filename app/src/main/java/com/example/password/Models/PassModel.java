@@ -124,7 +124,7 @@ public class PassModel extends ViewModel {
 
     public void addPassword(String password, String appname, String username, Long fid,int renewal) throws Exception {
 
-        String pw = Encryptor.encrypt(password,repo.getKey());
+        String pw = Encryptor.encrypt(password,Encryptor.retrieveSecretKey(layout.getContext()));
 
         MainDatabase.databaseWriteExecutor.execute(() -> {
             getPasswordRepo().insert_Password(new PasswordData(null, pw, appname , username, new Date(), fid, repo.getCurrentUser().getId(), false, renewal));
@@ -434,7 +434,7 @@ public class PassModel extends ViewModel {
 
     public void clickPassword(Context context) throws Exception {
         PasswordData item = holder.mItem;
-        String password = Encryptor.decrypt(item.getPassword(),repo.getKey());
+        String password = Encryptor.decrypt(item.getPassword(),Encryptor.retrieveSecretKey(context));
         if(!holder.selected){
 
             Bundle bundle = new Bundle();
@@ -488,7 +488,7 @@ public class PassModel extends ViewModel {
             editText.setCursorVisible(isEditable);
     }
 
-    public void changePassword(Long pid,String appName, String userName,String password,int renewal, String def) throws Exception {
+    public void changePassword(Long pid,String appName, String userName,String password,int renewal, String def,Context context) throws Exception {
         if(isEmpty(password)){
             password = def;
         }
@@ -497,7 +497,7 @@ public class PassModel extends ViewModel {
             appName = "N/A";
         }
 
-        String finalPassword = Encryptor.encrypt(password,repo.getKey());
+        String finalPassword = Encryptor.encrypt(password,Encryptor.retrieveSecretKey(context));
         String finalAppName = appName;
         MainDatabase.databaseWriteExecutor.execute(() -> {
             getPasswordRepo().change_Password(pid, finalAppName,userName, finalPassword,renewal,new Date());

@@ -21,6 +21,8 @@ import com.example.password.Repositories.SignRepository;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 
+import javax.crypto.SecretKey;
+
 public class LogModel extends ViewModel {
 
 
@@ -57,7 +59,7 @@ public class LogModel extends ViewModel {
         repo.setFolderRepo(repo.getDb().folderRepo);
     }
 
-    public boolean validateLogin(String email, String password) throws Exception {
+    public boolean validateLogin(String email, String password, Context context) throws Exception {
 
 
         SignData temp = getSignRepo().get_User_By_Email(email);
@@ -70,7 +72,9 @@ public class LogModel extends ViewModel {
         PW = Encryptor.hashString(PW);
 
         if(PW.equals(temp.getPassword())){
-            repo.setKey(Encryptor.generateKeyFromPassword(password,temp.getSalt().getBytes(StandardCharsets.UTF_8)));
+            Encryptor.generateAesKey();
+            Encryptor.storeSecretKey(Encryptor.generateKeyFromPassword(password,temp.getSalt().getBytes(StandardCharsets.UTF_8)),context);
+
             return true;
         }else{
             return false;

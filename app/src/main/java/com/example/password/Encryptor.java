@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
 import android.util.Base64;
+import android.util.Log;
 
 import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
@@ -20,8 +21,10 @@ import java.security.SecureRandom;
 import java.security.spec.KeySpec;
 
 import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -30,44 +33,49 @@ public class Encryptor {
 
     private static final int SALT_LENGTH = 16;
 
-    public static void generateKeyPair() throws NoSuchAlgorithmException, NoSuchProviderException, InvalidAlgorithmParameterException {
-        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(
-                KeyProperties.KEY_ALGORITHM_RSA, "AndroidKeyStore");
+    public static void generateAesKey() throws Exception {
+        KeyGenerator keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore");
 
         KeyGenParameterSpec keyGenParameterSpec = new KeyGenParameterSpec.Builder(
-                "KeyPairAlias",
+                "AesKeyAlias",
                 KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT
         )
-                .setDigests(KeyProperties.DIGEST_SHA256, KeyProperties.DIGEST_SHA512)
-                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_OAEP)
+                .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+                .setKeySize(256) // Use 256-bit AES for strong security
+                .setUserAuthenticationRequired(false) // Set to true if you want biometric/authentication protection
                 .build();
 
-        keyPairGenerator.initialize(keyGenParameterSpec);
-        keyPairGenerator.generateKeyPair();
+        keyGenerator.init(keyGenParameterSpec);
+        keyGenerator.generateKey();
     }
 
 
-    public static void storeSecretKey(SecretKey secretKey,Context context) throws Exception {
 
+    public static void storeSecretKey(SecretKey secretKey, Context context) throws Exception {
         // Load the Keystore
         KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
         keyStore.load(null);
 
-        // Get the public key from the KeyPair
-        PublicKey publicKey = keyStore.getCertificate("KeyPairAlias").getPublicKey();
+        // Retrieve the AES key from the Keystore
+        SecretKey aesKey = (SecretKey) keyStore.getKey("AesKeyAlias", null);
 
-        // Encrypt the SecretKey
-        Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+        // Encrypt the SecretKey using AES/GCM
+        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+        cipher.init(Cipher.ENCRYPT_MODE, aesKey);
+        byte[] iv = cipher.getIV(); // Initialization vector for decryption
         byte[] encryptedKey = cipher.doFinal(secretKey.getEncoded());
 
-        // Store the encrypted SecretKey (Base64 encoded) in SharedPreferences
-        String encodedKey = Base64.encodeToString(encryptedKey, Base64.DEFAULT);
+        // Store the encrypted SecretKey (Base64 encoded) and IV in SharedPreferences
         SharedPreferences sharedPreferences = context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("encrypted_secret_key", encodedKey);
+        editor.putString("encrypted_secret_key", Base64.encodeToString(encryptedKey, Base64.DEFAULT));
+        editor.putString("encryption_iv", Base64.encodeToString(iv, Base64.DEFAULT));
         editor.apply();
+
+        Log.d("StoreSecretKey", "SecretKey stored successfully");
     }
+
 
 
     public static SecretKey retrieveSecretKey(Context context) throws Exception {
@@ -75,26 +83,31 @@ public class Encryptor {
         KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
         keyStore.load(null);
 
-        // Get the private key from the KeyPair
-        PrivateKey privateKey = (PrivateKey) keyStore.getKey("KeyPairAlias", null);
+        // Retrieve the AES key from the Keystore
+        SecretKey aesKey = (SecretKey) keyStore.getKey("AesKeyAlias", null);
 
-        // Retrieve the encrypted SecretKey from SharedPreferences
+        // Retrieve the encrypted SecretKey and IV from SharedPreferences
         SharedPreferences sharedPreferences = context.getSharedPreferences("prefs", Context.MODE_PRIVATE);
-        String encodedKey = sharedPreferences.getString("encrypted_secret_key", null);
-        if (encodedKey == null) {
-            throw new IllegalStateException("SecretKey not found in SharedPreferences");
+        String encryptedKeyBase64 = sharedPreferences.getString("encrypted_secret_key", null);
+        String ivBase64 = sharedPreferences.getString("encryption_iv", null);
+
+        if (encryptedKeyBase64 == null || ivBase64 == null) {
+            throw new IllegalStateException("SecretKey or IV not found in SharedPreferences");
         }
 
-        byte[] encryptedKey = Base64.decode(encodedKey, Base64.DEFAULT);
+        byte[] encryptedKey = Base64.decode(encryptedKeyBase64, Base64.DEFAULT);
+        byte[] iv = Base64.decode(ivBase64, Base64.DEFAULT);
 
-        // Decrypt the SecretKey
-        Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
-        cipher.init(Cipher.DECRYPT_MODE, privateKey);
+        // Decrypt the SecretKey using AES/GCM
+        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+        GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(128, iv); // 128-bit authentication tag
+        cipher.init(Cipher.DECRYPT_MODE, aesKey, gcmParameterSpec);
         byte[] decryptedKey = cipher.doFinal(encryptedKey);
 
         // Recreate the SecretKey
         return new SecretKeySpec(decryptedKey, "AES");
     }
+
 
 
 
