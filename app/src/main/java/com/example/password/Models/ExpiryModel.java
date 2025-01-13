@@ -11,27 +11,36 @@ import java.util.List;
 
 public class ExpiryModel {
 
-    public PasswordRepository getPasswordRepo(){
-        return repo.getPasswordRepo();
+    PasswordRepository passwordRepo;
+    ExpiryModel(PasswordRepository passwordRepo){
+        this.passwordRepo = passwordRepo;
     }
-    private long daysToMilliseconds(int days) {
+    public static int daysToMilliseconds(int days) {
         // 1 day = 24 hours = 24 * 60 minutes = 24 * 60 * 60 seconds = 24 * 60 * 60 * 1000 milliseconds
         return days * 24 * 60 * 60 * 1000;
     }
 
+    public static long millisecondsToDays(long milliseconds) {
+        long seconds = milliseconds / 1000; // Convert milliseconds to seconds
+        // Convert seconds to days
+        return seconds / (24 * 60 * 60);
+    }
+
+
     public void expiryFunction(){
-        List<PasswordData> Plist = getPasswordRepo().get_All_Password_Data(false);
+
+        List<PasswordData> Plist = passwordRepo.get_All_Password_Data(false);
         for (PasswordData x: Plist
         ) {
 
-            /*
+
             if(x.getRenewal() == 0){
                 continue;
             }
-            */
 
-            if (x.getLastChanged().getTime() + daysToMilliseconds(x.getRenewal()) < new Date().getTime()){
-                getPasswordRepo().change_Password_Validity(x.getPid(),true);
+
+            if (x.getLastChanged().getTime() + daysToMilliseconds(x.getRenewal()) <= new Date().getTime()){
+                passwordRepo.change_Password_Validity(x.getPid(),true);
             }
 
         }
@@ -39,7 +48,7 @@ public class ExpiryModel {
     }
 
     public boolean expiryCheck(){
-        if(getPasswordRepo().get_All_Password_Data(true).isEmpty()){
+        if(passwordRepo.get_All_Password_Data(true).isEmpty()){
             return false;
         }else{
             return true;

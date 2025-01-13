@@ -70,4 +70,8 @@ public class PasswordRepository {
     public void change_Password_Validity(Long passwordId, boolean redacted) {
         passwordDao.changePasswordValidity(passwordId, redacted, UID);
     }
+
+    public void update_Password_Date(Long passwordId,Date date) {
+        passwordDao.updatePasswordDate(passwordId, UID,date);
+    }
 }

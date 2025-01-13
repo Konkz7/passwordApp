@@ -443,6 +443,7 @@ public class PassModel extends ViewModel {
             bundle.putString("username", item.getUserName());
             bundle.putString("password", password);
             bundle.putInt("renewal", item.getRenewal());
+            bundle.putLong("lastChanged", item.getLastChanged().getTime());
 
             NavHostFragment.findNavController(mainInstance)
                     .navigate(R.id.action_to_ViewFragment,bundle);
@@ -503,6 +504,13 @@ public class PassModel extends ViewModel {
             getPasswordRepo().change_Password(pid, finalAppName,userName, finalPassword,renewal,new Date());
         });
     }
+
+    public void updatePasswordDate(Long pid,Date date){
+        MainDatabase.databaseWriteExecutor.execute(() -> {
+            getPasswordRepo().update_Password_Date(pid,date);
+        });
+    }
+
 
 
 

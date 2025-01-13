@@ -1,12 +1,14 @@
 package com.example.password.Models;
 
 
+import static android.content.Context.MODE_PRIVATE;
 import static com.example.password.Models.ModelRepository.repo;
 
 
 import android.app.Activity;
 import android.content.Context;
 
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.lifecycle.ViewModel;
@@ -74,6 +76,9 @@ public class LogModel extends ViewModel {
         if(PW.equals(temp.getPassword())){
             Encryptor.generateAesKey();
             Encryptor.storeSecretKey(Encryptor.generateKeyFromPassword(password,temp.getSalt().getBytes(StandardCharsets.UTF_8)),context);
+
+            SharedPreferences preferences =  context.getSharedPreferences("lastLogged", MODE_PRIVATE);
+            preferences.edit().putLong("UID", temp.getId()).apply();
 
             return true;
         }else{

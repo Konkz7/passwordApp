@@ -1,31 +1,40 @@
-package com.example.password;
+package com.example.password.Models;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
-import com.example.password.Models.ExpiryModel;
+import com.example.password.R;
 
 public class InterProcess extends Service {
 
     private final IBinder binder = new MyBinder();
-    private final ExpiryModel expo = new ExpiryModel();
 
     private static final String CHANNEL_ID = "PasswordChannel";
-
     public InterProcess() { }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        createNotificationChannel();
+        createNotificationChannel();/*
+        db = MainDatabase.getDatabase(getApplicationContext());
+        SharedPreferences preferences =  getApplicationContext().getSharedPreferences("lastLogged", MODE_PRIVATE);
+        lastUID = preferences.getLong("UID",-1);
+
+
+        if(lastUID != -1){
+            db.initRepo(lastUID);
+            expo = new ExpiryModel(db.passwordRepo);
+        }
 
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("Listening for Events")
@@ -34,7 +43,14 @@ public class InterProcess extends Service {
                 .build();
         startForeground(1, notification);
 
-        //checkExpiryAndNotify();
+         */
+
+    }
+
+    private void startRandomNotificationWorker() {
+        androidx.work.OneTimeWorkRequest workRequest =
+                new androidx.work.OneTimeWorkRequest.Builder(NotificationWorker.class).build();
+        androidx.work.WorkManager.getInstance(this).enqueue(workRequest);
     }
 
     @Override
@@ -45,9 +61,26 @@ public class InterProcess extends Service {
                 .setSmallIcon(R.drawable.ic_notifications_black_24dp)
                 .build();
         startForeground(1, notification);
+
+
+      //  if(lastUID != -1) {
+            startRandomNotificationWorker();
+            //Log.d("lastUID",lastUID+"h");
+        //}
+
         return START_STICKY;
     }
 
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        super.onTaskRemoved(rootIntent);
+
+        // Handle application closing
+
+
+        // Destroy the service
+        stopSelf();
+    }
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "Password Manager";
@@ -60,22 +93,7 @@ public class InterProcess extends Service {
         }
     }
 
-    private void sendEventNotification(String eventDetails) {
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("Event Detected")
-                .setContentText(eventDetails)
-                .setSmallIcon(R.drawable.ic_notifications_black_24dp)
-                .build();
-        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        notificationManager.notify(2, notification);
-    }
 
-    private void checkExpiryAndNotify() {
-        expo.expiryFunction();
-        if (expo.expiryCheck()) {
-            //sendEventNotification("You have expired password(s)");
-        }
-    }
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -87,4 +105,6 @@ public class InterProcess extends Service {
             return InterProcess.this;
         }
     }
+
+
 }

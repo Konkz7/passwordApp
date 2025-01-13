@@ -13,7 +13,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.example.password.InterProcess;
+import com.example.password.Models.InterProcess;
 import com.example.password.Models.LogModel;
 import com.example.password.Models.PassModel;
 import com.example.password.R;

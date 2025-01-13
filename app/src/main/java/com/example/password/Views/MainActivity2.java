@@ -7,15 +7,12 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.example.password.InterProcess;
-import com.example.password.Models.LogModel;
-import com.example.password.Models.PassModel;
+import com.example.password.Models.InterProcess;
 import com.example.password.R;
 import com.example.password.SQLConnection;
 import com.example.password.databinding.ActivityMain2Binding;
@@ -35,9 +32,6 @@ public class MainActivity2 extends AppCompatActivity {
     private ActivityMain2Binding binding;
 
     private InterProcess.MyBinder appService = null;
-    private LogModel model;
-
-    private PassModel passModel;
 
     private SQLConnection sqlConnection;
     private Connection con;
@@ -61,10 +55,6 @@ public class MainActivity2 extends AppCompatActivity {
 
 
         setSupportActionBar(binding.toolbar);
-
-        model = new ViewModelProvider(this).get(LogModel.class);
-
-        model.initDatabase(this);
 
         intent = new Intent(MainActivity2.this, InterProcess.class);
 

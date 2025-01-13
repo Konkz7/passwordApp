@@ -55,4 +55,7 @@ public interface PasswordDao {
         // Change password validity for a specific user
         @Query("UPDATE password_table SET Redacted = :redacted WHERE `Password ID` = :pid AND `User ID` = :uid")
         void changePasswordValidity(Long pid, boolean redacted, Long uid);
+
+        @Query("UPDATE password_table SET `Last Changed` = :date WHERE `Password ID` = :pid AND `User ID` = :uid")
+        void updatePasswordDate(Long pid,Long uid,Date date);
 }

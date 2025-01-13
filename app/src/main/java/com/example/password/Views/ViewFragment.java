@@ -17,9 +17,12 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.password.Models.ExpiryModel;
 import com.example.password.Models.GenModel;
 import com.example.password.Models.PassModel;
 import com.example.password.databinding.FragmentViewBinding;
+
+import java.util.Date;
 
 
 public class ViewFragment extends Fragment {
@@ -77,6 +80,14 @@ public class ViewFragment extends Fragment {
             String userName = arguments.getString("username", "N/A");
             password = arguments.getString("password", "???");
             int renewal = arguments.getInt("renewal", 0);
+            long lastchanged = arguments.getLong("lastChanged", 0);
+            String result;
+            if(renewal != 0) {
+                int days2expire = renewal - (int) ExpiryModel.millisecondsToDays(new Date().getTime() - lastchanged);
+                result = days2expire > 0 ? String.valueOf(days2expire) : "Expired";
+            }else{
+                result = "Infinite/Not Set";
+            }
 
             def= password;
 
@@ -84,6 +95,8 @@ public class ViewFragment extends Fragment {
             uv.setText(userName);
             vv.setText(String.valueOf(renewal));
             pv.setText(password);
+            binding.expiresIn.setText("Expires in: "+ result + " day");
+
         }
 
         setProgress();
@@ -104,6 +117,7 @@ public class ViewFragment extends Fragment {
 
             }
         });
+
 
         binding.copyButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -150,7 +164,10 @@ public class ViewFragment extends Fragment {
 
         try {
             passModel.changePassword(pid,appName,userName,password,renewal,def,getContext());
-            passModel.changePasswordValidity(pid,false);
+            if(!password.equals(def)) {
+                passModel.changePasswordValidity(pid, false);
+                passModel.updatePasswordDate(pid,new Date());
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
