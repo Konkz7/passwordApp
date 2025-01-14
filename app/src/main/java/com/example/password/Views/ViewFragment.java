@@ -84,7 +84,7 @@ public class ViewFragment extends Fragment {
             String result;
             if(renewal != 0) {
                 int days2expire = renewal - (int) ExpiryModel.millisecondsToDays(new Date().getTime() - lastchanged);
-                result = days2expire > 0 ? String.valueOf(days2expire) : "Expired";
+                result = days2expire > 0  ? days2expire + " day(s)" : "Expired";
             }else{
                 result = "Infinite/Not Set";
             }
@@ -95,7 +95,7 @@ public class ViewFragment extends Fragment {
             uv.setText(userName);
             vv.setText(String.valueOf(renewal));
             pv.setText(password);
-            binding.expiresIn.setText("Expires in: "+ result + " day");
+            binding.expiresIn.setText("Expires in: "+ result);
 
         }
 

@@ -36,6 +36,8 @@ import com.example.password.Views.MainFragment;
 import com.example.password.Views.PasswordRecyclerAdapter;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -360,6 +362,32 @@ public class PassModel extends ViewModel {
 
 
     }
+    public void maintainPasswords(String reference){
+        // Find the RecyclerView
+
+        List<PasswordData> temp = getPasswordRepo().get_Filtered_Password_Data(pickedFolder, false);
+        sortByAppNameSimilarity(temp,reference);
+        setFiltered(temp);
+
+        if(getFiltered().isEmpty()){
+            Log.d("Rview", "Empty ahh");
+            empty_screen.setVisibility(View.VISIBLE);
+        }else{
+            empty_screen.setVisibility(View.INVISIBLE);
+        }
+        if (pList != null) {
+            Context context = pList.getContext();
+            pList.setLayoutManager(new LinearLayoutManager(context));
+
+            pList.setAdapter(new PasswordRecyclerAdapter(getFiltered(), this));// used to be another function call
+            Log.d("RVIEW",  "Recycler isnt null" + pickedFolder);
+        }else{
+            Log.d("RVIEW",  "Recycler is null");
+
+        }
+
+
+    }
 
     //TEST FUNCTION
     public void deleteFolders(){
@@ -436,7 +464,7 @@ public class PassModel extends ViewModel {
         PasswordData item = holder.mItem;
         String password = Encryptor.decrypt(item.getPassword(),Encryptor.retrieveSecretKey(context));
         if(!holder.selected){
-
+            
             Bundle bundle = new Bundle();
             bundle.putLong("pid", item.getPid());
             bundle.putString("appname", item.getAppName());
@@ -510,6 +538,35 @@ public class PassModel extends ViewModel {
             getPasswordRepo().update_Password_Date(pid,date);
         });
     }
+
+    private int levenshteinDistance(String s1, String s2) {
+        int[][] dp = new int[s1.length() + 1][s2.length() + 1];
+
+        for (int i = 0; i <= s1.length(); i++) {
+            for (int j = 0; j <= s2.length(); j++) {
+                if (i == 0) {
+                    dp[i][j] = j; // If s1 is empty, insert all of s2
+                } else if (j == 0) {
+                    dp[i][j] = i; // If s2 is empty, remove all of s1
+                } else if (s1.charAt(i - 1) == s2.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j - 1]; // Characters match
+                } else {
+                    dp[i][j] = 1 + Math.min(dp[i - 1][j - 1], // Replace
+                            Math.min(dp[i - 1][j],    // Remove
+                                    dp[i][j - 1]));  // Insert
+                }
+            }
+        }
+
+        return dp[s1.length()][s2.length()];
+    }
+
+    private void sortByAppNameSimilarity(List<PasswordData> list, String reference) {
+        list.sort(Comparator.comparingInt(item ->
+                levenshteinDistance(item.getAppName(), reference)
+        ));
+    }
+
 
 
 

@@ -9,8 +9,6 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
 
-
-
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -21,38 +19,45 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Password"
         tools:targetApi="31">
+        <activity
+            android:name=".Views.StartActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-
-
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter></activity>
         <service
             android:name=".Models.InterProcess"
-            android:foregroundServiceType="dataSync"
-            android:stopWithTask="false"
+            android:enabled="true"
             android:exported="false"
-            android:enabled="true"/>
+            android:foregroundServiceType="dataSync"
+            android:stopWithTask="false" />
 
         <activity
             android:name=".Views.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.Password">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/Theme.Password"/>
 
         <activity
             android:name=".Views.MainActivity2"
             android:exported="true"
             android:label="@string/app_name"
+            android:theme="@style/Theme.Password"
             android:windowSoftInputMode="adjustPan"
-            android:theme="@style/Theme.Password">
+        />
 
-        </activity>
+        <activity
+            android:name=".Views.RegisterActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Password"
+            />
 
-        <receiver android:name=".BootReceiver" android:enabled="true"
+        <receiver
+            android:name=".BootReceiver"
+            android:enabled="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

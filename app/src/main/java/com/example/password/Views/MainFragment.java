@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
@@ -92,6 +93,7 @@ public class MainFragment extends Fragment {
 
         FloatingActionButton add = view.findViewById(R.id.fab);
         CheckBox select = view.findViewById(R.id.selectAll_button2);
+        SearchView searchView = view.findViewById(R.id.searchView);
 
         requireActivity().getOnBackPressedDispatcher().addCallback(
                 getViewLifecycleOwner(),
@@ -136,6 +138,19 @@ public class MainFragment extends Fragment {
                 passModel.deletePasswords();
                 passModel.removeAllPickedPasswords();
                 passModel.maintainPasswords(false);
+            }
+        });
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                passModel.maintainPasswords(newText);
+                return true;
             }
         });
 

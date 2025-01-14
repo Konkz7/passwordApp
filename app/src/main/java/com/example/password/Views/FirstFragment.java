@@ -46,24 +46,14 @@ public class FirstFragment extends Fragment {
         logModel = new ViewModelProvider(requireActivity()).get(LogModel.class);
         authModel = new ViewModelProvider(requireActivity()).get(AuthModel.class);
 
-
-
-        binding.buttonForgot.setOnClickListener(new View.OnClickListener() {
+        binding.backLog.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                NavHostFragment.findNavController(FirstFragment.this)
-                        .navigate(R.id.action_FirstFragment_to_SecondFragment);
+            public void onClick(View v) {
+                getActivity().finish();
             }
         });
-
         
 
-        binding.buttonRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                NavHostFragment.findNavController(FirstFragment.this).navigate(R.id.action_FirstFragment_to_ThirdFragment);
-            }
-        });
 
         binding.buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -52,6 +52,7 @@ dependencies {
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.preference:preference:1.2.0")
     implementation("androidx.security:security-crypto:1.0.0")
+    implementation("androidx.activity:activity:1.9.3")
     annotationProcessor("androidx.room:room-compiler:2.6.1")
 
     // Lifecycle libraries

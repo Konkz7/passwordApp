@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.password.R;
 import com.example.password.databinding.FragmentThirdBinding;
 
 public class ThirdFragment extends Fragment {
@@ -29,6 +30,20 @@ public class ThirdFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        binding.nextEmail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavHostFragment.findNavController(ThirdFragment.this)
+                        .navigate(R.id.action_ThirdFragment_to_Reg1Fragment);
+            }
+        });
+
+        binding.backReg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().finish();
+            }
+        });
         /*
         binding.buttonThird.setOnClickListener(new View.OnClickListener() {
             @Override
