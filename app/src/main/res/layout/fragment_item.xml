@@ -2,19 +2,29 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp">
 
     <TextView
         android:id="@+id/app_name"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_margin="@dimen/text_margin"
+        android:background="#6A1B9A"
         android:textAppearance="?attr/textAppearanceListItem" />
+
+    <Space
+        android:layout_width="10dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0" />
 
     <TextView
         android:id="@+id/user_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/text_margin"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#283593"
+        android:gravity="center"
         android:textAppearance="?attr/textAppearanceListItem" />
+
 </LinearLayout>

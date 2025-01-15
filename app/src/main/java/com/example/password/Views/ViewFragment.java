@@ -95,7 +95,7 @@ public class ViewFragment extends Fragment {
             uv.setText(userName);
             vv.setText(String.valueOf(renewal));
             pv.setText(password);
-            binding.expiresIn.setText("Expires in: "+ result);
+            binding.expiresLabel.setText(result);
 
         }
 
