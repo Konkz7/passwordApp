@@ -43,13 +43,6 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
         android:gravity="center"
-        android:text="Wipe Database" />
+        android:text="Delete Account" />
 
-    <TextView
-        android:id="@+id/contact_in"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
-        android:gravity="center"
-        android:text="@string/contact" />
 </LinearLayout>

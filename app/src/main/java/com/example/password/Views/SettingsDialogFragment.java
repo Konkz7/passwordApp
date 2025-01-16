@@ -166,8 +166,8 @@ public class SettingsDialogFragment extends DialogFragment {
 
     public boolean handleWipe( Runnable onConfirmLeave) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Confirm Restore")
-                .setMessage("Are you sure you want to completely wipe your database?")
+        builder.setTitle("Confirm Account Deletion")
+                .setMessage("Are you sure you want to completely wipe your data?")
                 .setPositiveButton("Yes", (dialog, which) -> {
                     // Execute the action to leave the fragment
                     if (onConfirmLeave != null) {

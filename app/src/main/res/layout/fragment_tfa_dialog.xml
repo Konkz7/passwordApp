@@ -34,7 +34,7 @@
             android:id="@+id/phone_in"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/otp" />
+            android:text="Phone Number OTP (Not Implemented)" />
 
     </RadioGroup> <!-- Add margin -->
 

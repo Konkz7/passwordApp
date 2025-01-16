@@ -124,6 +124,7 @@ public class PassModel extends ViewModel {
             Log.d("Folder","Empty ahh nig"+getFolderRepo().get_All_Folders().size());
         }
 
+
     }
 
     public void addPassword(String password, String appname, String username, Long fid,int renewal) throws Exception {
@@ -157,7 +158,7 @@ public class PassModel extends ViewModel {
     }
 
 
-    private void addFolderButton(String name, Long fid ){
+    private Button addFolderButton(String name, Long fid ){
         //LinearLayout linearLayout = findViewById(R.id.horizontalScrollView).findViewById(R.id.linearLayout);
 
         // Add buttons dynamically
@@ -174,7 +175,9 @@ public class PassModel extends ViewModel {
             removeAllPickedPasswords();
             setFiltered(getPasswordRepo().get_Filtered_Password_Data(fid,false));
             Log.d("Folder",  "size =" + getFiltered().size());
+            maintainFolders();
             maintainPasswords(false);
+
         });
 
         button.setOnLongClickListener(new View.OnLongClickListener() {
@@ -186,7 +189,7 @@ public class PassModel extends ViewModel {
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(layout.getContext());
                 builder.setTitle("Choose an Option")
-                        .setMessage("Do you want to rename or delete the category?")
+                        .setMessage("Do you want to rename or delete " + name + "?")
                         .setPositiveButton("Rename", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -256,6 +259,7 @@ public class PassModel extends ViewModel {
 
         // Add button to the LinearLayout
         layout.addView(button);
+        return button;
     }
 
     public void moveFolderButton(){
@@ -327,7 +331,11 @@ public class PassModel extends ViewModel {
 
         for (FolderData i: folders
         ) {
-            addFolderButton(i.getFolderName(), i.getFid());
+            Button temp = addFolderButton(i.getFolderName(), i.getFid());
+            if(i.getFid().equals(pickedFolder)){
+
+                temp.setBackgroundColor(Color.parseColor("#283593"));
+            }
         }
 
         categories.clear();
@@ -455,9 +463,11 @@ public class PassModel extends ViewModel {
         if(!holder.selected){
             addPickedPassword(holder.mItem);
             holder.selected = true;
+            holder.userView.setBackgroundColor(Color.GRAY);
         }else{
             deletePickedPassword(holder.mItem);
             holder.selected = false;
+            holder.userView.setBackgroundColor(Color.parseColor("#283593"));
         }
         Toast.makeText(context, getPickedPasswordSize() + " :Selected password(s)" + holder.selected + holder.mItem.getPid(), Toast.LENGTH_SHORT).show();
     }
@@ -480,6 +490,7 @@ public class PassModel extends ViewModel {
         }else{
             deletePickedPassword(holder.mItem);
             holder.selected = false;
+            holder.userView.setBackgroundColor(Color.parseColor("#283593"));
             Toast.makeText(context, getPickedPasswordSize() + " :Selected password(s)", Toast.LENGTH_SHORT).show();
         }
     }

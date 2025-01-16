@@ -1,5 +1,6 @@
 package com.example.password.Views;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -89,6 +90,11 @@ public class PasswordRecyclerAdapter extends RecyclerView.Adapter<PasswordRecycl
             for (ViewHolder h: holders
             ) {
                 h.selected = value;
+                if(value){
+                    h.userView.setBackgroundColor(Color.GRAY);
+                }else{
+                    h.userView.setBackgroundColor(Color.parseColor("#283593"));
+                }
             }
         }
         @Override

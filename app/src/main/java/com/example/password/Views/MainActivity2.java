@@ -90,6 +90,10 @@ public class MainActivity2 extends AppCompatActivity {
             settingsDialogFragment.show(getSupportFragmentManager(), "SettingsDialog");
 
             return true;
+        }else if (id == R.id.action_contact) {
+            Intent intent1 = new Intent(MainActivity2.this, ContactActivity.class);
+            startActivity(intent1);
+            return true;
         }
 
         return super.onOptionsItemSelected(item);

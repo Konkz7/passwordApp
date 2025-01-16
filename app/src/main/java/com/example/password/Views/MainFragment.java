@@ -51,6 +51,11 @@ public class MainFragment extends Fragment {
 
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        passModel.removeAllPickedPasswords();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
